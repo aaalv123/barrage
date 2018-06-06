@@ -73,11 +73,33 @@ input:focus{
     height: 30px;
     color: #fff;
 }
-.videobox .control span{
+.videobox .control .paly{
     display: inline-block;
     padding: 0 5px;
     border: 1px solid #ccc;
     margin: 0 5px;
+    vertical-align: top;
+}
+.videobox .control .process{
+    display: inline-block;
+    width: 640px;
+    height: 20px;
+    vertical-align: top;
+    background-color: #ccc;
+    position: relative;
+    cursor: pointer;
+}
+.videobox .control .process .thumb{
+    display: block;
+    width: 0%;
+    height: 20px;
+    background-color: #ad4141;
+}
+.videobox .control .time{
+    font-size: 14px;
+}
+.videobox .control .time em{
+    font-style: normal;
 }
 .barragebox{
     position: absolute;
