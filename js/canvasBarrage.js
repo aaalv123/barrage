@@ -357,36 +357,146 @@ document.getElementById('open').addEventListener('click', function () {
 
 // 播放器控制
 var videoplayer = document.getElementById('videoplayer');
+var playerTimeId;
+var duration;
+var videoprocessWidth = document.getElementById('videoprocess').clientWidth;
 // 播放
 document.getElementById('controlplay').addEventListener('click', function () {
-    videoplayer.play();
+    if(videoplayer.paused){
+        this.innerHTML = '暂停';
+        videoplayer.play();
+        playtime();
+    }else{
+        this.innerHTML = '播放';
+        videoplayer.pause();
+        cancelAnimationFrame(playerTimeId);
+    }
 }, false)
-// 播放
-videoplayer.addEventListener('play', function () {
-    // console.log(videoplayer.duration);
-}, false)
-// 播放
-videoplayer.addEventListener('loadeddata', function () {
-    console.log(1);
-    console.log(videoplayer.duration);
-}, false)
+// 获取视频总长度
 videoplayer.addEventListener('loadedmetadata', function () {
-    console.log(2);
-    console.log(videoplayer.duration);
+    duration = videoplayer.duration;
+    document.getElementById('videotime').innerHTML = '<em id="playerNowTime">0:00</em> / ' + timeformate(duration);
 }, false)
-videoplayer.addEventListener('loadstart', function () {
-    console.log(3);
-    console.log(videoplayer.duration);
-}, false)
-videoplayer.addEventListener('progress', function () {
-    console.log(4);
-    console.log(videoplayer.duration);
-}, false)
-videoplayer.addEventListener('canplay', function () {
-    console.log(5);
-    console.log(videoplayer.duration);
-}, false)
-videoplayer.addEventListener('canplaythrough', function () {
-    console.log(6);
-    console.log(videoplayer.duration);
-}, false)
+// seeking
+document.getElementById('videoprocess').addEventListener('click', function (e) {
+    var curtime = videoplayer.currentTime = duration * e.offsetX / videoprocessWidth;
+    document.getElementById('videothumb').style.width = 100 * curtime / duration + '%';
+    testdata.forEach(function(ele,index){
+        if(ele.time > curtime){
+            ele.isShow = false;
+        }else{
+            ele.isShow = true;
+        }
+    });
+}, false);
+
+function playtime(){
+    var curtime = videoplayer.currentTime;
+    document.getElementById('playerNowTime').innerHTML = timeformate(curtime);
+    document.getElementById('videothumb').style.width = 100 * curtime / duration + '%';
+    
+    for(var i = 0;i < testdata.length;i++){
+        if(testdata[i].isShow){
+            continue;
+        }
+        if(testdata[i].time <= curtime && !testdata[i].isShow){
+            canvasBarrage.add({
+                value: testdata[i].text
+            });
+            testdata[i].isShow = true;
+        }
+    }
+    playerTimeId = requestAnimationFrame(playtime);
+}
+
+function timeformate(time){
+    var sec = parseInt(time/60);
+    var min = parseInt(time%60);
+    var hours = 0;
+    min = min < 10 ? '0' + min : min;
+    if(sec > 60){
+        hours = parseInt(sec/60);
+        sec = parseInt(sec%60);
+        sec = sec < 10 ? '0' + sec : sec;
+        return hours +':'+ sec +':'+ min;  
+    }
+    return sec +':'+ min;
+}
+
+var testdata = [
+    {
+        text:'测试内容1',
+        isShow:false,
+        time:10
+    },
+    {
+        text:'测试内容2',
+        isShow:false,
+        time:30
+    },
+    {
+        text:'测试内容3',
+        isShow:false,
+        time:50
+    },
+    {
+        text:'测试内容4',
+        isShow:false,
+        time:84
+    },
+    {
+        text:'测试内容5',
+        isShow:false,
+        time:92
+    },
+    {
+        text:'测试内容6',
+        isShow:false,
+        time:120
+    },
+    {
+        text:'测试内容7',
+        isShow:false,
+        time:121
+    },
+    {
+        text:'测试内容8',
+        isShow:false,
+        time:122
+    },
+    {
+        text:'测试内容9',
+        isShow:false,
+        time:133
+    },
+    {
+        text:'测试内容10',
+        isShow:false,
+        time:148
+    },
+    {
+        text:'测试内容11',
+        isShow:false,
+        time:169
+    },
+    {
+        text:'测试内容12',
+        isShow:false,
+        time:203
+    },
+    {
+        text:'测试内容13',
+        isShow:false,
+        time:214
+    },
+    {
+        text:'测试内容14',
+        isShow:false,
+        time:233
+    },
+    {
+        text:'测试内容15',
+        isShow:false,
+        time:235
+    }
+];
