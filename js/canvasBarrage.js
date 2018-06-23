@@ -1,4 +1,5 @@
-var canvasBarrage = (function () {
+(function () {
+    'use strict';
     var canvasEle, canvasContext, canvasWidth, frameId;
     // 用户配置项
     // var defaultoption = {
@@ -271,7 +272,7 @@ var canvasBarrage = (function () {
     function open(){
         isClose = false;
     }
-    return {
+    var canvasBarrage = {
         init: init,
         add: addItem,
         addSpecialItem: addSpecialItem,
@@ -282,6 +283,8 @@ var canvasBarrage = (function () {
         close: close,
         open: open
     }
+    var _globals = (function(){ return this || (1,eval)("this"); }());
+    !('socket' in _globals) && (_globals.canvasBarrage = canvasBarrage); 
 })();
 canvasBarrage.init(document.getElementById('barrage'));
 // 添加弹幕普通
@@ -365,17 +368,24 @@ document.getElementById('controlplay').addEventListener('click', function () {
     if(videoplayer.paused){
         this.innerHTML = '暂停';
         videoplayer.play();
-        playtime();
+        // playtime();
     }else{
         this.innerHTML = '播放';
         videoplayer.pause();
-        cancelAnimationFrame(playerTimeId);
+        // cancelAnimationFrame(playerTimeId);
     }
 }, false)
 // 获取视频总长度
 videoplayer.addEventListener('loadedmetadata', function () {
     duration = videoplayer.duration;
     document.getElementById('videotime').innerHTML = '<em id="playerNowTime">0:00</em> / ' + timeformate(duration);
+}, false)
+// 更新视频时间
+videoplayer.addEventListener('timeupdate', function () {
+    var curtime = videoplayer.currentTime;
+    document.getElementById('playerNowTime').innerHTML = timeformate(curtime);
+    document.getElementById('videothumb').style.width = 100 * curtime / duration + '%';
+    danmu(curtime);
 }, false)
 // seeking
 document.getElementById('videoprocess').addEventListener('click', function (e) {
@@ -390,11 +400,7 @@ document.getElementById('videoprocess').addEventListener('click', function (e) {
     });
 }, false);
 
-function playtime(){
-    var curtime = videoplayer.currentTime;
-    document.getElementById('playerNowTime').innerHTML = timeformate(curtime);
-    document.getElementById('videothumb').style.width = 100 * curtime / duration + '%';
-    
+function danmu(curtime){
     for(var i = 0;i < testdata.length;i++){
         if(testdata[i].isShow){
             continue;
@@ -406,7 +412,6 @@ function playtime(){
             testdata[i].isShow = true;
         }
     }
-    playerTimeId = requestAnimationFrame(playtime);
 }
 
 function timeformate(time){
